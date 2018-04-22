@@ -10,22 +10,21 @@ const mysql = require('mysql');
 const loginRouter = require('./router/loginrouter');
 const apiRouter = require('./router/apirouter');
 const registerRouter = require('./router/registerrouter');
-
+//db초기화 작업
 let pool = mysql.createPool({
-  host: 'ec2-52-79-75-141.ap-northeast-2.compute.amazonaws.com',
-  port: '3306',
-  password: 'password',
-  user: 'root',
-  database: 'test'
+  host:     process.env.DB_HOST,
+  port:     process.env.DB_PORT,
+  password: process.env.DB_PASSWROD,
+  user:     process.env.DB_USER,
+  database: process.env.DB_DATABASE
 });
-app.use(function (err,req,res) {
-  if(err){
 
-    console.log('unexpected eroor..exit program');
-    process.exit(1);
-  }
-});
+//에러처리
+
+//보안
 app.use(helmet());
+
+//라우팅 설정
 app.use('/api', apiRouter(pool));
 app.use('/login', loginRouter(pool));
 app.use('/register', registerRouter(pool));
