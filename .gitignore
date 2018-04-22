@@ -62,7 +62,8 @@ typings/
 .env
 
 #pacakge
-./package-lock.json
-package.json
+package-lock.json
+#keyfile
+key/
 
 # End of https://www.gitignore.io/api/node
