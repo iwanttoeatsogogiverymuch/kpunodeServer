@@ -12,6 +12,8 @@ const config = require('dotenv').config();
 const loginRouter = require('./router/loginrouter');
 const apiRouter = require('./router/apirouter');
 const registerRouter = require('./router/registerrouter');
+
+//env
 console.log(config);
 
 
@@ -19,6 +21,18 @@ console.log(config);
 app.use(logger());
 
 //error handleing
+app.use(function(err, req, res, next) {
+
+    if (err) {
+        console.log(err.code);
+        console.log(req.params || "no params");
+        console.log(req.header || "there is no header property");
+        console.log(req.method);
+        console.log(req.originUrl);
+
+    }
+    next();
+});
 //app.use();
 
 //security

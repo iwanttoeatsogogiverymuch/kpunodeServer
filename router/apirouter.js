@@ -3,29 +3,52 @@ const fcm = require('../db/fcmhelper.js');
 
 //apiRouter
 //accept and post device apiRouter
-module.exports = function() {
+module.exports = function()
+{
 
+    //error function
+    function erroHandler(err, conn)
+    {
+        console.log(err.code);
+        switch (err.code)
+        {
+            case: break;
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
     const APIROUTER = {
         GET: 'GET /api/devicelog/:id',
         POST: 'POST /api/devicelog'
     };
-    router.param('id', function(req, res, next, id) {
-        if (id == 1) {
+
+    router.param('id', function(req, res, next, id)
+    {
+        if (id == 1)
+        {
             console.log('admin...');
         }
         next();
     });
-    router.param('id', function(req, res, next, id) {
-        if (id == 1) {
+    router.param('id', function(req, res, next, id)
+    {
+        if (id == 1)
+        {
             console.log('admin...');
         }
         next();
     });
 
+    /////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
     //post router
-    router.post('/devicelog', function(req, res) {
-        pool.getConnection(function(err, conn) {
-            if (err) {
+    router.post('/devicelog', function(req, res)
+    {
+        pool.getConnection(function(err, conn)
+        {
+            if (err)
+            {
                 console.log("getConnection error");
                 console.log(err.code);
                 console.log(err.fatal);
@@ -34,9 +57,13 @@ module.exports = function() {
                 });
                 process.exit(1);
 
-            } else {
-                conn.query('SELECT * FROM devicelog WHERE id=?', '1', function(err, result, field) {
-                    if (err) {
+            }
+            else
+            {
+                conn.query('SELECT * FROM devicelog WHERE id=?', '1', function(err, result, field)
+                {
+                    if (err)
+                    {
                         console.log("query error");
                         console.log(err.code);
                         console.log(err.fatal);
@@ -44,12 +71,16 @@ module.exports = function() {
                         process.exit(1);
                     }
                     //get the device information from android
-                    else {
+                    else
+                    {
                         //
-                        if (result.length == 0) {
+                        if (result.length == 0)
+                        {
                             res.send(JSON.parse());
                             return;
-                        } else {
+                        }
+                        else
+                        {
                             console.log("no error in api router post");
                         }
 
@@ -63,24 +94,38 @@ module.exports = function() {
         conn.release();
     });
 
-
+    /////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
     //get router
-    router.get('/devicelog/:id', function(req, res) {
+    router.get('/devicelog/:id', function(req, res)
+    {
 
         console.log("/devicelog/:id->");
-        if (!(req.params.id)) {
+        if (!(req.params.id))
+        {
             console.log("   no paramter pass");
             res.send("wrong parameter");
-        } else {
-            pool.getConnection(function(err, conn) {
+        }
+        else
+        {
+
+            /////////////////////////////////////////////////////////////////////
+            //if no error
+            pool.getConnection(function(err, conn)
+            {
                 console.log('apiRouter:' + 'get:' + 'pool getConnection');
-                if (err) {
+                if (err)
+                {
                     console.log("getConnerrror");
                     console.log(err);
                     process.exit(1);
-                } else {
-                    conn.query('SELECT * FROM device_log WHERE id=?', req.params.id, function(err, result, field) {
-                        if (err) {
+                }
+                else
+                {
+                    conn.query('SELECT * FROM device_log WHERE id=?', req.params.id, function(err, result, field)
+                    {
+                        if (err)
+                        {
                             res.statusCode(500).send(JSON.parse());
                             console.log(err);
                             console.log("query error");
@@ -88,12 +133,16 @@ module.exports = function() {
                             process.exit(1);
                         }
                         //get the device information from android
-                        else {
+                        else
+                        {
                             //
-                            if (result.length = 0) {
+                            if (result.length = 0)
+                            {
 
                                 res.send(JSON.parse("no query results"));
-                            } else {
+                            }
+                            else
+                            {
                                 console.log("nothing");
                             }
                             //
