@@ -1,22 +1,35 @@
 const router = require('express').Router();
 const fcm = require('../db/fcmhelper.js');
-
+const poolhelper = require('../db/pool.js');
 //apiRouter
 //accept and post device apiRouter
 module.exports = function()
 {
 
-    //error function
-    function erroHandler(err, conn)
+    let PoolClass = new poolhelper('test');
+    PoolClass.setPoolEvent();
+    let pool = PoolClass.getInstance();
+
+
+    function logError(err)
     {
         console.log(err.code);
-        switch (err.code)
-        {
-            case: break;
-        }
+        console.log(err.fatal);
+    }
+    //error function
+    function QueryErrorHandler(err)
+    {
+        logError(err);
+        throw new Error("QueryError");
+
     }
 
-    /////////////////////////////////////////////////////////////////////
+    function ConnectionErrorHandler(err)
+    {
+        logError(err);
+        throw new Error("connection error");
+
+    }
     /////////////////////////////////////////////////////////////////////
     const APIROUTER = {
         GET: 'GET /api/devicelog/:id',
@@ -31,17 +44,6 @@ module.exports = function()
         }
         next();
     });
-    router.param('id', function(req, res, next, id)
-    {
-        if (id == 1)
-        {
-            console.log('admin...');
-        }
-        next();
-    });
-
-    /////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////
     //post router
     router.post('/devicelog', function(req, res)
     {
@@ -52,22 +54,18 @@ module.exports = function()
                 console.log("getConnection error");
                 console.log(err.code);
                 console.log(err.fatal);
-                pool.end(function() {
-
-                });
                 process.exit(1);
-
             }
             else
             {
                 conn.query('SELECT * FROM devicelog WHERE id=?', '1', function(err, result, field)
                 {
+                    conn.release();
                     if (err)
                     {
                         console.log("query error");
                         console.log(err.code);
                         console.log(err.fatal);
-                        conn.release();
                         process.exit(1);
                     }
                     //get the device information from android
@@ -86,20 +84,16 @@ module.exports = function()
 
                     }
                 });
-                conn.release();
             }
-
         });
         res.send('post devicelog');
         conn.release();
     });
 
     /////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////
     //get router
     router.get('/devicelog/:id', function(req, res)
     {
-
         console.log("/devicelog/:id->");
         if (!(req.params.id))
         {
@@ -108,12 +102,10 @@ module.exports = function()
         }
         else
         {
-
-            /////////////////////////////////////////////////////////////////////
             //if no error
             pool.getConnection(function(err, conn)
             {
-                console.log('apiRouter:' + 'get:' + 'pool getConnection');
+                console.log('apiRouter:   ' + 'get:   ' + 'pool getConnection');
                 if (err)
                 {
                     console.log("getConnerrror");
@@ -124,39 +116,33 @@ module.exports = function()
                 {
                     conn.query('SELECT * FROM device_log WHERE id=?', req.params.id, function(err, result, field)
                     {
+                        conn.release();
                         if (err)
                         {
-                            res.statusCode(500).send(JSON.parse());
                             console.log(err);
                             console.log("query error");
-                            conn.release();
+                            res.send("errrrr");
                             process.exit(1);
                         }
                         //get the device information from android
                         else
                         {
-                            //
-                            if (result.length = 0)
+                            if (result.length == 0)
                             {
-
-                                res.send(JSON.parse("no query results"));
+                                res.send("no query result");
                             }
                             else
                             {
-                                console.log("nothing");
+                                res.send(JSON.stringify(result));
                             }
-                            //
                             //
                         }
                     });
-                    conn.release();
+
                 }
-
             });
-            res.send('get devicelog...');
+
         }
-
     });
-
     return router;
 };
