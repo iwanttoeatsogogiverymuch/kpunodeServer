@@ -1,0 +1,51 @@
+const mysql = require('mysql');
+require('dotenv').config();
+
+export default class {
+    constructor(env) {
+        if (env == 'test') {
+
+            this.pool = mysql.createPool({
+                connectionLimit: 10,
+                host: process.env.DB_HOST,
+                port: process.env.DB_PORT,
+                password: process.env.DB_PASSWORD,
+                user: process.env.DB_USER,
+                database: process.env.DB_DATABASE
+            });
+
+        } else if (env == 'dev' || env == 'undefinded') {
+            this.pool = mysql.createPool({
+                connectionLimit: 10,
+                host: process.env.DB_HOST,
+                port: process.env.DB_PORT,
+                password: process.env.DB_PASSWORD,
+                user: process.env.DB_USER,
+                database: process.env.DB_DATABASE
+            });
+        }
+    }
+    setPoolEvent() {
+        if (this.pool && env && (env == 'test')) {
+            this.pool.on('enqueue', function() {
+                console.log('Waiting for available connection slot');
+            });
+            this.pool.on('release', function(connection) {
+                console.log('Connection %d released', connection.threadId);
+            });
+        } else {
+            throw new Error('there is no instanciated pool...');
+
+        }
+
+    }
+    getInstance() {
+        if (this.pool) {
+            return this.pool;
+        } else {
+            throw new Error('there is no instanciated pool...');
+
+        }
+
+    }
+}

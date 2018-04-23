@@ -5,29 +5,29 @@ const express = require('express');
 const app = express();
 const helmet = require('helmet');
 const mysql = require('mysql');
+const logger = require('morgan');
 
 //router
+const config = require('dotenv').config();
 const loginRouter = require('./router/loginrouter');
 const apiRouter = require('./router/apirouter');
 const registerRouter = require('./router/registerrouter');
-//db초기화 작업
-let pool = mysql.createPool({
-  host:     process.env.DB_HOST,
-  port:     process.env.DB_PORT,
-  password: process.env.DB_PASSWROD,
-  user:     process.env.DB_USER,
-  database: process.env.DB_DATABASE
-});
+console.log(config);
 
-//에러처리
 
-//보안
+//logging
+app.use(logger());
+
+//error handleing
+//app.use();
+
+//security
 app.use(helmet());
 
-//라우팅 설정
-app.use('/api', apiRouter(pool));
-app.use('/login', loginRouter(pool));
-app.use('/register', registerRouter(pool));
+//setting router
+app.use('/api', apiRouter());
+app.use('/login', loginRouter());
+app.use('/register', registerRouter());
 
 
 app.listen(process.env.PORT || 3000, () => console.log('server is running on port 3000'));

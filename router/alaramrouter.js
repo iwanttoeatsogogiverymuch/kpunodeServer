@@ -5,10 +5,12 @@ const fcm = require('../db/fcmhelper.js');
 //accept and post device apiRouter
 module.exports = function() {
 
+    const TAG = "nodejs/router/alaramrouter";
     const APIROUTER = {
         GET: 'GET /api/devicelog/:id',
         POST: 'POST /api/devicelog'
     };
+
     router.param('id', function(req, res, next, id) {
         if (id == 1) {
             console.log('admin...');
@@ -79,7 +81,8 @@ module.exports = function() {
                     console.log(err);
                     process.exit(1);
                 } else {
-                    conn.query('SELECT * FROM device_log WHERE id=?', req.params.id, function(err, result, field) {
+                    const query = 'SELECT * FROM device_log WHERE id=?';
+                    conn.query(query, req.params.id, function(err, result, field) {
                         if (err) {
                             res.statusCode(500).send(JSON.parse());
                             console.log(err);
