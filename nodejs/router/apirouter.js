@@ -91,7 +91,7 @@ module.exports = function()
                     else
                     {
                         //
-                        if (result.length == 0)
+                        if (result.length === 0)
                         {
                             const msg = {
                                 errcode:"req.params.id",
@@ -151,7 +151,7 @@ module.exports = function()
                         //get the device information from android
                         else
                         {
-                            if (result.length == 0)
+                            if (result.length === 0)
                             {
                                 res.send("no query result");
                             }

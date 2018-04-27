@@ -16,6 +16,7 @@
     "mysql": "^2.15.0"
   },
   "dependencies": {
+    "@firebase/app-types": "^0.2.0",
     "axios": "^0.18.0",
     "chai": "^4.1.2",
     "dotenv": "^5.0.1",
