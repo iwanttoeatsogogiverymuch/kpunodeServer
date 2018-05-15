@@ -10,15 +10,15 @@ module.exports = function (){
   PoolClass.setPoolEvent();
   let pool = PoolClass.getInstance();
 
-  router.post("/", function(req, res) {
+  router.get("/", function(req, res) {
     const params = {
       password:req.query.password,
       id:req.query.id,
-      fcmtoken:req.query.fcmtoken
     };
     console.log(params);
 
     const queryString1 = "INSERT INTO user SET ?";
+    console.log("hiiiiiiiii");
     pool.getConnection(function (err,connection) {
       if(err){
         console.log(err);
@@ -28,23 +28,27 @@ module.exports = function (){
         });
       }
       else{
+        console.log("sefsaef");
         connection.query(queryString1,params,function (error, results, fields) {
           connection.release();
 
           if(error){
             console.log(error);
-            res.status(503).json(JSON.parse({msg:"query error"}));
+            res.status(503).send('error');
           }
+          //==가 아닌 ===를 써야함 
           else if(results.length === 0){
-            res.json(JSON.parse({msg:"error register"}));
+            res.send("id incorrect");
             console.log(results[0].password);
           }
-          else if(results[0].affectedRows ){
-            res.json(JSON.parse({msg:"success register"}));
+          //결과가 있으면 메세지를 보낸다
+          else if(results.affectedRows ){
+              res.json({msg:"sucesslogin",logintoken:"nothing"});
           }
+          //나머지 에러처리
           else{
             console.log("nothing");
-            res.json(JSON.parse({msg:"nothing"}));
+            res.json({msg:"cannot login"});
           }
   
         });

@@ -16,11 +16,13 @@ module.exports = class Pool
                 port: process.env.DB_PORT,
                 password: process.env.DB_PASSWORD,
                 user: process.env.DB_USER,
-                database: process.env.DB_DATABASE
+                database: process.env.DB_DATABASE,
+                timezone:process.env.DB_TIMEZONE,
+                charset:process.env.DB_CHARSET,
             });
 
         }
-        else if (env == 'dev' || env == 'undefinded')
+        else if (env == 'dev' || typeof env === 'undefinded')
         {
             this.pool = mysql.createPool(
             {

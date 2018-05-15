@@ -1,4 +1,4 @@
-export default USER_ERROR_MESSAGE = {
+module.exports = USER_ERROR_MESSAGE = {
     invalid_param: {
         code: 1,
         msg: 'invalid_parameter check parameter key id , password'
@@ -15,4 +15,5 @@ export default USER_ERROR_MESSAGE = {
         code: 8,
         msg: 'uncaught execption'
     }
+
 };

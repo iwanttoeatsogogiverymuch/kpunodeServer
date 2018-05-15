@@ -2,6 +2,7 @@ const router = require('express').Router();
 const fcm = require('../db/fcmhelper.js');
 const poolhelper = require('../db/pool.js');
 
+
 //apiRouter
 //accept and post device apiRouter
 
@@ -21,16 +22,18 @@ module.exports = function()
 ////////////////////////////////////////////////////////////
 
     //post router
-    router.post('/devicelog', function(req, res)
+    router.post('/', function(req, res)
     {
 
-        const params = {
+        // console.log(typeof req.query.id);
+        // console.log(typeof req.query.sensor);
 
+        const params = {
             device_uid:parseInt(req.query.device_id),
-            sensor:  parseInt(req.query.sensor)
+            humidity:  parseFloat(req.query.humidity)
         };
-        const query = "INSERT INTO device_log SET ?";
-        const query2 = "SELECT fcmtoken FROM user WHERE device_uid=? ";
+        const queryString = "INSERT INTO humidity SET ?";
+
 
         pool.getConnection(function(err, conn)
         {
@@ -44,67 +47,46 @@ module.exports = function()
             else
             {
                 conn.beginTransaction(function(err){
-                    if(err) {console.log("transaction error");}
-
-                    //begin here
-                    //
+                    if(err){
+                        console.log("transaction error");
+                        res.json({msg:"transaction error"});
+                    }
                     else{
-                        //first query of inserting devicelog
-
-                        conn.query(query, params, function(err, result, field)
+                        conn.query(queryString, params, function(err, result, field)
                         {
-                            //error
+                            conn.release();
                             if (err)
                             {
                                 console.log("query error");
                                 console.log(err.code);
                                 console.log(err.fatal);
-                                res.json({msg:"query error"});
         
-                                conn.release();
                                 pool.end(function(err){
                                     console.log("poll ended...");
                                     process.exit(1);
                                 });
         
                             }
-
-
-                            //get the device information
-                            else {
+                            //post the humidity information
+                           else{
                                 //
                                 if (result.length === 0)
                                 {
                                     const msg = {
-                                        errcode:"req.params.id",
-                                        msg:req.params.id
+                                        msg:"lentgh is zero"
                                     };
                                     res.json(msg);
-                                   conn.release();
+                                   
                                 }
                                 else
                                 {
-                                    conn.query(query2,req.query.device_id,function(err,result2){
-                                            conn.release();
-                                        if(err){
-                                            console.log("query 2 error in transaction");
-                                        }
-                                        else{
-
-                                            const fcmtoken = result2[0].fcmtoken;
-                                            fcm.setInstance();
-                                            fcm.sendToDevice(fcmtoken);
-                                        }
-
-                                    });
-                                    res.json(result);
-                                    console.log("no error in api router post");
+                                    res.json({msg:"scuessfully inserted"});
+                                    console.log("no error in humidityrouter post");
                                    
                                 }
         
                             }
                         });
-
                     }
                 });
 
@@ -116,10 +98,10 @@ module.exports = function()
 
     /////////////////////////////////////////////////////////////////////
     //get router
-    router.get('/devicelog/:id', function(req, res)
+    router.get('/:device_uid', function(req, res)
     {
-        console.log("/devicelog/:id->");
-        if (!(req.params.id))
+        console.log("humidity /:id->");
+        if (!(req.params.device_uid))
         {
             console.log("no paramter pass");
             res.send("wrong parameter");
@@ -134,20 +116,22 @@ module.exports = function()
                 {
                     console.log("getConnerrror");
                     console.log(err);
-                    process.exit(1);
+                    pool.end(function(err){
+                        process.exit(1);
+                    });
+
                 }
                 else
                 {
-                    const query = 'SELECT * FROM device_log WHERE device_uid=?';
-                    conn.query(query, req.params.id, function(err, result, field)
+                    const queryString = 'SELECT * FROM humidity WHERE device_uid=?';
+                    conn.query(queryString, req.params.device_uid, function(err, result, field)
                     {
                         conn.release();
                         if (err)
                         {
                             console.log(err);
                             console.log("query error");
-                            res.send("errrrr");
-                            process.exit(1);
+                            res.json({msg:"query error"});
                         }
                         //get the device information from android
                         else
