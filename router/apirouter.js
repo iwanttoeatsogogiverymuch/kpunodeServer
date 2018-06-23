@@ -138,7 +138,7 @@ module.exports = function()
                 }
                 else
                 {
-                    const query = 'SELECT DATE_FORMAT(entrance_time,\'%m/%d\') AS date,SUM(sensor) AS sum_day FROM device_log WHERE device_uid=? GROUP BY DATE(entrance_time) ORDER BY DATE(entrance_time)';
+                    const query = 'SELECT DATE_FORMAT(entrance_time,\'%m/%d\') AS date,SUM(sensor) AS sum_day FROM device_log WHERE device_uid=? AND DATE_SUB(CURDATE(),INTERVAL 7 DAY) <= entrance_time GROUP BY DATE(entrance_time) ORDER BY DATE(entrance_time)';
                     conn.query(query, req.params.id, function(err, result, field)
                     {
                         conn.release();
