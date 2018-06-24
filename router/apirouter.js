@@ -138,7 +138,12 @@ module.exports = function()
                 }
                 else
                 {
-                    const query = 'SELECT DATE_FORMAT(entrance_time,\'%m/%d\') AS date,SUM(sensor) AS sum_day FROM device_log WHERE device_uid=? AND DATE_SUB(CURDATE(),INTERVAL 7 DAY) <= entrance_time GROUP BY DATE(entrance_time) ORDER BY DATE(entrance_time)';
+                    const query = "SELECT DATE_FORMAT(entrance_time,\'%m/%d\')" +
+                     "AS date,SUM(sensor) AS sum_day " +
+                     "FROM device_log " +
+                     "WHERE device_uid=? " + 
+                     "AND DATE_SUB(CURDATE(),INTERVAL 7 DAY) <= entrance_time " +
+                     "GROUP BY DATE(entrance_time) ORDER BY DATE(entrance_time)";
                     conn.query(query, req.params.id, function(err, result, field)
                     {
                         conn.release();
@@ -169,5 +174,61 @@ module.exports = function()
 
         }
     });
+
+    router.get('/devicelog_day/:id', function(req, res)
+    {
+        console.log("/devicelog/:id->");
+        if (!(req.params.id))
+        {
+            console.log("no paramter pass");
+            res.send("wrong parameter");
+        }
+        else
+        {
+            //if no error
+            pool.getConnection(function(err, conn)
+            {
+                console.log('apiRouter:   ' + 'get:   ' + 'pool getConnection');
+                if (err)
+                {
+                    console.log("getConnerrror");
+                    console.log(err);
+                    process.exit(1);
+                }
+                else
+                {
+                    const query = "SELECT * FROM device_log WHERE device_uid=?";
+                    conn.query(query, req.params.id, function(err, result, field)
+                    {
+                        conn.release();
+                        if (err)
+                        {
+                            console.log(err);
+                            console.log("query error");
+                            res.send("errrrr");
+                            process.exit(1);
+                        }
+                        //get the device information from android
+                        else
+                        {
+                            if (result.length === 0)
+                            {
+                                res.status(200).json({msg:"no results"});
+                            }
+                            else
+                            {
+                                res.status(200).json(result);
+                            }
+                            //
+                        }
+                    });
+
+                }
+            });
+
+        }
+    });
+
     return router;
+    
 };
