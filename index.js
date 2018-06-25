@@ -7,7 +7,8 @@ const app = express();
 const helmet = require('helmet');
 const mysql = require('mysql');
 const logger = require('morgan');
-
+//const serveStatic= require('serve-static');
+const path = require("path");
 //router
 const config = require('dotenv').config();
 const loginRouter = require('./router/loginrouter');
@@ -16,6 +17,7 @@ const registerRouter = require('./router/registerrouter');
 const fcmregister = require('./router/fcmregister');
 const alramrouter = require('./router/alramrouter');
 const humidityrouter = require("./router/humidityrouter");
+const tensorrouter = require("./router/tensorflowrouter");
 //env
 console.log(config);
 
@@ -24,14 +26,14 @@ app.use(logger('dev'));
 
 //security
 app.use(helmet());
-
+app.use(express.static("./"))
 //setting router
 app.use('/api', apiRouter());
 app.use('/login', loginRouter());
 app.use('/register', registerRouter());
 app.use('/humidity',humidityrouter());
 app.use('/alram',alramrouter());
-
+app.use('/tensor',tensorrouter());
 //404 error
 app.use(function (req, res, next) {
     res.status(404).send('404 - Not Found!');
@@ -61,4 +63,4 @@ app.use(function (err, req, res, next) {
     next();
 });
 
-app.listen(process.env.PORT || 3000, () => console.log('server is running on port 3000'));
+app.listen(3000, () => console.log('server is running on port 3000'));

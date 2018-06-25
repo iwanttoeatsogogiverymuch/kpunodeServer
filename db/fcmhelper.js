@@ -1,7 +1,6 @@
 const moment = require('moment');
 const admin = require('firebase-admin');
 const key = require('../key/fcm-push-example-43e46-firebase-adminsdk-0mi12-e8ce2d5672.json');
-
 let fcm;
 
 module.exports = class FcmHelper
@@ -29,12 +28,10 @@ module.exports = class FcmHelper
            // const data = alramdata;
 
 
-            const timestamp = new Date();
-            const datelocal = timestamp.toLocaleDateString();
             const payload = {
                 notification:{
                         title:"고양이출입알람",
-                        body:"고양이가 출입하였습니다."
+                        body: moment().toString()
                          }
                     };
 
